@@ -11,30 +11,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,8 +39,9 @@ import com.kartollika.mobiussharedtransitions.combo.ComboTypography
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
-import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
+import com.kartollika.mobiussharedtransitions.combo.components.BlurredCircleIconButton
+import com.kartollika.mobiussharedtransitions.combo.components.ComboCenterAppBar
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -65,10 +60,42 @@ fun ComboSlots(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                ComboSlotsAppBar(
-                    modifier = Modifier.statusBarsPadding(),
-                    state = state,
-                    onCloseClick = onCloseClick,
+                ComboCenterAppBar(
+                    modifier = Modifier
+                        .statusBarsPadding()
+                        .height(64.dp),
+                    title = {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            with(LocalNavAnimatedContentScope.current) {
+                                Text(
+                                    text = state.title,
+                                    modifier = Modifier
+                                        .backgroundBlurSource(LocalBlurProvider.current)
+                                        .animateEnterExit(),
+                                    style = ComboTypography.Headline20,
+                                    color = ComboColors.White,
+                                    maxLines = 1,
+                                )
+                            }
+                            if (state.description != null) {
+                                Text(
+                                    text = state.description,
+                                    style = ComboTypography.Label12,
+                                    color = ComboColors.White60,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    },
+                    endContent = {
+                        BlurredCircleIconButton(
+                            icon = Icons.Default.Close,
+                            contentDescription = "Close",
+                            onClick = onCloseClick,
+                            canDrawArea = { area -> area.key != ComboBlurKey.DetailsTint },
+                        )
+                    },
                 )
 
                 SlotsList(
@@ -99,67 +126,6 @@ fun ComboSlots(
             }
         }
     }
-}
-
-// ---------------------------------------------------------------------------
-// App bar
-// ---------------------------------------------------------------------------
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun SharedTransitionScope.ComboSlotsAppBar(
-    state: ComboState,
-    modifier: Modifier = Modifier,
-    onCloseClick: () -> Unit = {},
-) {
-    CenterAppBar(
-        modifier = modifier.height(64.dp),
-        backgroundColor = Color.Transparent,
-        title = {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                with(LocalNavAnimatedContentScope.current) {
-                    Text(
-                        text = state.title,
-                        modifier = Modifier
-                            .backgroundBlurSource(LocalBlurProvider.current)
-                            .animateEnterExit(),
-                        style = ComboTypography.Headline20,
-                        color = ComboColors.White,
-                        maxLines = 1,
-                    )
-                }
-                if (state.description != null) {
-                    Text(
-                        text = state.description,
-                        style = ComboTypography.Label12,
-                        color = ComboColors.White60,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-        },
-        endContent = {
-            IconButton(
-                onClick = onCloseClick,
-                modifier = Modifier
-                    .size(40.dp)
-                    .backgroundBlurEffect(
-                        shape = CircleShape,
-                        blurState = LocalBlurProvider.current,
-                        blurTint = ComboColors.White10,
-                        fallbackBackgroundColor = ComboColors.White10,
-                        canDrawArea = { area -> area.key != ComboBlurKey.DetailsTint }
-                    ),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    tint = ComboColors.White,
-                )
-            }
-        }
-    )
 }
 
 // ---------------------------------------------------------------------------
@@ -206,27 +172,8 @@ private fun SharedTransitionScope.SlotsList(
 }
 
 // ---------------------------------------------------------------------------
-// Helpers: CenterAppBar + PriceButton
+// Price button
 // ---------------------------------------------------------------------------
-
-@Composable
-private fun CenterAppBar(
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.Transparent,
-    startContent: @Composable () -> Unit = {},
-    title: @Composable () -> Unit = {},
-    endContent: @Composable () -> Unit = {},
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(backgroundColor),
-    ) {
-        Box(Modifier.align(Alignment.CenterStart).padding(start = 8.dp)) { startContent() }
-        Box(Modifier.align(Alignment.Center)) { title() }
-        Box(Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)) { endContent() }
-    }
-}
 
 @Composable
 private fun PriceButton(

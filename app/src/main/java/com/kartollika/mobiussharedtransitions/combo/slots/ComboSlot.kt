@@ -17,18 +17,15 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
@@ -47,11 +44,12 @@ import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.kartollika.mobiussharedtransitions.combo.ProductCustomize
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
+import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
+import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbnail
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
 
@@ -59,7 +57,6 @@ const val ComboSlotSizeRatio = 0.66f
 private const val MaxImageHeightFraction = 0.44f
 private const val CustomizeMaxItems = 3
 private val MinContentButtonSpacing = 12.dp
-private val ButtonHeight = 40.dp
 
 private val SlotRoundingInSlots = 24.dp
 private val SlotRoundingInDetails = 36.dp
@@ -272,7 +269,7 @@ private fun SharedTransitionScope.ComboSlotContent(
             }
 
             // Customize button
-            SlotCustomizeButton(
+            CustomizeButton(
                 modifier = Modifier
                     .layoutId(ComboSlotLayoutId.Button)
                     .sharedBounds(
@@ -284,10 +281,15 @@ private fun SharedTransitionScope.ComboSlotContent(
                             )
                         ),
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                        resizeMode = scaleToBounds(),
+                        resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
                         clipInOverlayDuringTransition = OverlayClip(CircleShape),
+                    )
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = onClick,
                     ),
-                onClick = onClick,
             )
         }
     )
@@ -298,52 +300,18 @@ private fun SharedTransitionScope.ComboSlotContent(
 // ---------------------------------------------------------------------------
 
 @Composable
-private fun SlotCustomizeButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(ButtonHeight)
-            .background(ComboColors.White10, CircleShape)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick,
-            ),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "Customize",
-            style = ComboTypography.Label16Medium,
-            color = ComboColors.White,
-        )
-    }
-}
-
-@Composable
 private fun SlotCustomize(
     product: SlotProduct,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier) {
         product.customize.take(CustomizeMaxItems).forEach { customizeItem ->
-            ProductCustomizeIngredientSmall(customizeItem)
+            IngredientThumbnail(
+                item = customizeItem,
+                contentScale = ContentScale.FillHeight,
+            )
         }
     }
-}
-
-@Composable
-private fun ProductCustomizeIngredientSmall(customizeItem: ProductCustomize) {
-    Image(
-        painter = painterResource(customizeItem.imageRes),
-        contentDescription = null,
-        modifier = Modifier
-            .size(28.dp)
-            .graphicsLayer { alpha = if (customizeItem.stopped) 0.4f else 1f },
-        contentScale = ContentScale.FillHeight,
-    )
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

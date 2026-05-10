@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -52,12 +51,13 @@ import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.kartollika.mobiussharedtransitions.combo.ProductCustomize
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
+import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
+import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbnail
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
 
@@ -360,7 +360,20 @@ private fun SharedTransitionScope.SlotProductCustomize(
         contentAlignment = Alignment.Center,
     ) {
         if (product.customize.isEmpty()) {
-            CustomizeButton(product = product)
+            CustomizeButton(
+                modifier = Modifier.sharedBounds(
+                    sharedContentState = rememberSharedContentState(
+                        key = ComboSharedElementKey(
+                            slotId = product.slotId,
+                            productId = product.productId,
+                            type = ComboSharedElementType.CustomizeButton
+                        )
+                    ),
+                    animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                    clipInOverlayDuringTransition = OverlayClip(CircleShape),
+                    resizeMode = SharedTransitionScope.ResizeMode.RemeasureToBounds,
+                ),
+            )
         } else {
             CustomizeIngredients(product = product)
         }
@@ -391,52 +404,7 @@ private fun SharedTransitionScope.CustomizeIngredients(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         product.customize.take(3).forEach { item ->
-            IngredientThumbnail(item)
+            IngredientThumbnail(item = item)
         }
-    }
-}
-
-@Composable
-private fun IngredientThumbnail(item: ProductCustomize) {
-    Image(
-        painter = painterResource(item.imageRes),
-        contentDescription = null,
-        modifier = Modifier
-            .size(28.dp)
-            .graphicsLayer { alpha = if (item.stopped) 0.4f else 1f },
-        contentScale = ContentScale.Fit,
-    )
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun SharedTransitionScope.CustomizeButton(
-    product: SlotProduct,
-) {
-    Box(
-        modifier = Modifier
-            .sharedBounds(
-                sharedContentState = rememberSharedContentState(
-                    key = ComboSharedElementKey(
-                        slotId = product.slotId,
-                        productId = product.productId,
-                        type = ComboSharedElementType.CustomizeButton
-                    )
-                ),
-                animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                clipInOverlayDuringTransition = OverlayClip(CircleShape),
-                resizeMode = scaleToBounds(),
-            )
-            .background(ComboColors.White10, CircleShape)
-    ) {
-        Text(
-            modifier = Modifier
-                .height(40.dp)
-                .wrapContentHeight()
-                .padding(horizontal = 16.dp),
-            text = "Customize",
-            style = ComboTypography.Label16Regular,
-            color = ComboColors.White,
-        )
     }
 }
