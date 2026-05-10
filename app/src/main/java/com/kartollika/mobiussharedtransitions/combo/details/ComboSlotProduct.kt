@@ -7,14 +7,12 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.scaleToBounds
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -38,20 +36,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
@@ -60,15 +50,14 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
-import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
 import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbnail
 import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
-import com.kartollika.mobiussharedtransitions.combo.slots.SlotRoundingInDetails
-import com.kartollika.mobiussharedtransitions.combo.slots.SlotRoundingInSlots
+import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotBackgroundShared
+import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotSurface
 
 private const val ChangeProductAnimationDurationMs = 100
 private val ProductImageHeight = 308.dp
@@ -88,9 +77,10 @@ fun SharedTransitionScope.ComboSlotProduct(
             .width(204.dp)
             .aspectRatio(ProductImageAspectRatio),
     ) {
-        SlotProductBackground(
+        ComboSlotBackgroundShared(
             modifier = Modifier.fillMaxSize(),
             state = state,
+            surface = ComboSlotSurface.Details,
             backgroundColor = backgroundColor,
         )
         SlotProductContent(
@@ -103,79 +93,6 @@ fun SharedTransitionScope.ComboSlotProduct(
                 .padding(bottom = 20.dp, top = 12.dp),
         )
     }
-}
-
-// ---------------------------------------------------------------------------
-// Background (shared element + blur)
-// ---------------------------------------------------------------------------
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun SharedTransitionScope.SlotProductBackground(
-    state: SlotProduct,
-    backgroundColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    val animatedProgress = LocalNavAnimatedContentScope.current
-        .transition.animateDp { value ->
-            when (value) {
-                EnterExitState.Visible -> SlotRoundingInDetails
-                EnterExitState.PreEnter, EnterExitState.PostExit -> SlotRoundingInSlots
-            }
-        }
-
-    // Defer reading animatedProgress.value to draw time so the corner-radius
-    // animation invalidates only draw — not composition of border/blur/OverlayClip.
-    val clipShape = remember(animatedProgress) {
-        object : Shape {
-            override fun createOutline(
-                size: Size,
-                layoutDirection: LayoutDirection,
-                density: Density,
-            ): Outline {
-                val radius = with(density) { animatedProgress.value.toPx() }
-                return Outline.Rounded(
-                    RoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        cornerRadius = CornerRadius(radius),
-                    )
-                )
-            }
-        }
-    }
-
-    Box(
-        modifier = modifier
-            .sharedElement(
-                sharedContentState = rememberSharedContentState(
-                    key = ComboSharedElementKey(
-                        slotId = state.slotId,
-                        productId = state.productId,
-                        type = ComboSharedElementType.Background
-                    )
-                ),
-                animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                clipInOverlayDuringTransition = OverlayClip(clipShape),
-            )
-            .backgroundBlurEffect(
-                blurRadius = 40.dp,
-                blurState = LocalBlurProvider.current,
-                fallbackBackgroundColor = backgroundColor,
-                shape = clipShape,
-                canDrawArea = { area ->
-                    area.key != ComboBlurKey.SlotProductImage &&
-                        area.key != ComboBlurKey.DetailProductImage
-                }
-            )
-            .border(
-                width = 0.5.dp,
-                color = ComboColors.White20,
-                shape = clipShape
-            )
-    )
 }
 
 // ---------------------------------------------------------------------------

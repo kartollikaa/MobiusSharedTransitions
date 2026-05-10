@@ -4,7 +4,6 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.scaleToBounds
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -23,12 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.RoundRect
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -42,9 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
@@ -84,6 +75,7 @@ fun SharedTransitionScope.ComboSlot(
     ) {
         ComboSlotBackgroundShared(
             state = state,
+            surface = ComboSlotSurface.Slots,
             backgroundColor = backgroundColor,
             modifier = Modifier.fillMaxSize()
         )
@@ -97,66 +89,6 @@ fun SharedTransitionScope.ComboSlot(
             onClick = onClick
         )
     }
-}
-
-// ---------------------------------------------------------------------------
-// Background (shared element)
-// ---------------------------------------------------------------------------
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun SharedTransitionScope.ComboSlotBackgroundShared(
-    state: SlotProduct,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = ComboColors.CardBackground,
-) {
-    val animatedProgress = LocalNavAnimatedContentScope.current
-        .transition.animateDp { value ->
-            when (value) {
-                EnterExitState.PreEnter, EnterExitState.PostExit -> SlotRoundingInDetails
-                EnterExitState.Visible -> SlotRoundingInSlots
-            }
-        }
-
-    // Defer reading animatedProgress.value to draw time so the corner-radius
-    // animation invalidates only draw — not composition of border/blur/OverlayClip.
-    val clipShape = remember(animatedProgress) {
-        object : Shape {
-            override fun createOutline(
-                size: Size,
-                layoutDirection: LayoutDirection,
-                density: Density,
-            ): Outline {
-                val radius = with(density) { animatedProgress.value.toPx() }
-                return Outline.Rounded(
-                    RoundRect(
-                        left = 0f,
-                        top = 0f,
-                        right = size.width,
-                        bottom = size.height,
-                        cornerRadius = CornerRadius(radius),
-                    )
-                )
-            }
-        }
-    }
-
-    ComboSlotBackground(
-        modifier = modifier
-            .sharedElement(
-                sharedContentState = rememberSharedContentState(
-                    key = ComboSharedElementKey(
-                        slotId = state.slotId,
-                        productId = state.productId,
-                        type = ComboSharedElementType.Background
-                    )
-                ),
-                animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                clipInOverlayDuringTransition = OverlayClip(clipShape),
-            ),
-        backgroundColor = backgroundColor,
-        clipShape = clipShape
-    )
 }
 
 // ---------------------------------------------------------------------------
