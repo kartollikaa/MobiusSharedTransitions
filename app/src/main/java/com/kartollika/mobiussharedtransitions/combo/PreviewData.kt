@@ -24,6 +24,7 @@ val previewProduct2 = SlotProduct(
     extraPrice = "+$1.00",
     name = "Salted Caramel Latte",
     size = "450 ml",
+    stopped = true,
 )
 
 val previewProduct3 = SlotProduct(

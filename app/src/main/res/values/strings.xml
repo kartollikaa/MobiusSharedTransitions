@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MobiusSharedTransitions</string>
+    <string name="combo_slot_sold_out_badge">Sold out</string>
 </resources>

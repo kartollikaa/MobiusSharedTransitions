@@ -56,6 +56,7 @@ import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
 import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbnail
+import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
 
@@ -253,13 +254,25 @@ private fun SharedTransitionScope.ComboSlotContent(
                             ),
                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                         )
-                        .graphicsLayer { alpha = animatedAlpha.value }
                         .backgroundBlurSource(
                             blurState = LocalBlurProvider.current,
-                            zIndex = 1f,
+                            zIndex = 2f,
                             key = ComboBlurKey.SlotProductImage,
                         )
+                        .graphicsLayer { alpha = animatedAlpha.value }
                 )
+
+                if (state.stopped) {
+                    StoppedBadge(
+                        state = state,
+                        modifier = Modifier
+                            .zIndex(3f)
+                            .align(Alignment.Center),
+                        canDrawArea = {
+                            it.key != ComboBlurKey.DetailProductImage
+                        },
+                    )
+                }
             }
 
             // Info + customize panel

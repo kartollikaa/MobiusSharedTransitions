@@ -64,6 +64,7 @@ import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
 import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbnail
+import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
 import com.kartollika.mobiussharedtransitions.combo.slots.SlotRoundingInDetails
@@ -230,12 +231,7 @@ private fun SharedTransitionScope.SlotProductImage(
         AnimatedContent(
             modifier = Modifier
                 .matchParentSize()
-                .align(Alignment.Center)
-                .backgroundBlurSource(
-                    blurState = LocalBlurProvider.current,
-                    zIndex = 1f,
-                    key = ComboBlurKey.DetailProductImage,
-                ),
+                .align(Alignment.Center),
             targetState = state.imageRes,
             transitionSpec = {
                 scaleIn(
@@ -260,8 +256,25 @@ private fun SharedTransitionScope.SlotProductImage(
                         ),
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                     )
+                    .backgroundBlurSource(
+                        blurState = LocalBlurProvider.current,
+                        zIndex = 2f,
+                        key = ComboBlurKey.DetailProductImage,
+                    )
                     .graphicsLayer { alpha = animatedAlpha.value },
                 contentScale = ContentScale.Fit,
+            )
+        }
+
+        if (state.stopped) {
+            StoppedBadge(
+                state = state,
+                modifier = Modifier
+                    .zIndex(3f)
+                    .align(Alignment.Center),
+                canDrawArea = {
+                    it.key != ComboBlurKey.SlotProductImage
+                },
             )
         }
     }
