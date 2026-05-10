@@ -38,38 +38,6 @@ enum class ComboSlotSurface(val cornerRadius: Dp) {
 }
 
 /**
- * Frosted-glass background for a combo slot card.
- *
- * Excludes the product-image blur areas from the blur source so that the image does not
- * appear blurred inside the card.
- */
-@Composable
-fun ComboSlotBackground(
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = ComboColors.CardBackground,
-    clipShape: Shape = RoundedCornerShape(SlotRoundingInSlots),
-) {
-    Box(
-        modifier = modifier
-            .backgroundBlurEffect(
-                blurState = LocalBlurProvider.current,
-                fallbackBackgroundColor = backgroundColor,
-                shape = clipShape,
-                blurRadius = 40.dp,
-                canDrawArea = { area ->
-                    area.key != ComboBlurKey.SlotProductImage &&
-                            area.key != ComboBlurKey.DetailProductImage
-                }
-            )
-            .border(
-                width = 0.5.dp,
-                color = ComboColors.White20,
-                shape = clipShape,
-            )
-    )
-}
-
-/**
  * Shared-element wrapper around [ComboSlotBackground]. Used on both the slots grid and the
  * product details screen so both sides render the exact same background and animate the
  * corner radius between [SlotRoundingInSlots] and [SlotRoundingInDetails] during the
@@ -135,5 +103,37 @@ fun SharedTransitionScope.ComboSlotBackgroundShared(
             ),
         backgroundColor = backgroundColor,
         clipShape = clipShape,
+    )
+}
+
+/**
+ * Frosted-glass background for a combo slot card.
+ *
+ * Excludes the product-image blur areas from the blur source so that the image does not
+ * appear blurred inside the card.
+ */
+@Composable
+private fun ComboSlotBackground(
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = ComboColors.CardBackground,
+    clipShape: Shape = RoundedCornerShape(SlotRoundingInSlots),
+) {
+    Box(
+        modifier = modifier
+            .backgroundBlurEffect(
+                blurState = LocalBlurProvider.current,
+                fallbackBackgroundColor = backgroundColor,
+                shape = clipShape,
+                blurRadius = 40.dp,
+                canDrawArea = { area ->
+                    area.key != ComboBlurKey.SlotProductImage &&
+                            area.key != ComboBlurKey.DetailProductImage
+                }
+            )
+            .border(
+                width = 0.5.dp,
+                color = ComboColors.White20,
+                shape = clipShape,
+            )
     )
 }
