@@ -19,12 +19,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -38,7 +42,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
@@ -57,9 +63,6 @@ const val ComboSlotSizeRatio = 0.66f
 private const val MaxImageHeightFraction = 0.44f
 private const val CustomizeMaxItems = 3
 private val MinContentButtonSpacing = 12.dp
-
-private val SlotRoundingInSlots = 24.dp
-private val SlotRoundingInDetails = 36.dp
 
 @Composable
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -114,8 +117,27 @@ private fun SharedTransitionScope.ComboSlotBackgroundShared(
             }
         }
 
-    val clipShape = remember(animatedProgress.value) {
-        RoundedCornerShape(animatedProgress.value)
+    // Defer reading animatedProgress.value to draw time so the corner-radius
+    // animation invalidates only draw — not composition of border/blur/OverlayClip.
+    val clipShape = remember(animatedProgress) {
+        object : Shape {
+            override fun createOutline(
+                size: Size,
+                layoutDirection: LayoutDirection,
+                density: Density,
+            ): Outline {
+                val radius = with(density) { animatedProgress.value.toPx() }
+                return Outline.Rounded(
+                    RoundRect(
+                        left = 0f,
+                        top = 0f,
+                        right = size.width,
+                        bottom = size.height,
+                        cornerRadius = CornerRadius(radius),
+                    )
+                )
+            }
+        }
     }
 
     ComboSlotBackground(

@@ -8,10 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
+import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
-import com.kartollika.mobiussharedtransitions.combo.ComboColors
+
+val SlotRoundingInSlots = 24.dp
+val SlotRoundingInDetails = 36.dp
 
 /**
  * Frosted-glass background for a combo slot card.
@@ -23,7 +26,7 @@ import com.kartollika.mobiussharedtransitions.combo.ComboColors
 fun ComboSlotBackground(
     modifier: Modifier = Modifier,
     backgroundColor: Color = ComboColors.CardBackground,
-    clipShape: Shape = RoundedCornerShape(24.dp),
+    clipShape: Shape = RoundedCornerShape(SlotRoundingInSlots),
 ) {
     Box(
         modifier = modifier
@@ -34,7 +37,7 @@ fun ComboSlotBackground(
                 blurRadius = 40.dp,
                 canDrawArea = { area ->
                     area.key != ComboBlurKey.SlotProductImage &&
-                        area.key != ComboBlurKey.DetailProductImage
+                            area.key != ComboBlurKey.DetailProductImage
                 }
             )
             .border(
