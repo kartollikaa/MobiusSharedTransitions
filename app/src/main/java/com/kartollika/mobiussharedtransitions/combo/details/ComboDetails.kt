@@ -192,7 +192,7 @@ private fun SharedTransitionScope.MatchButton(
         Text(
             text = "It's a match",
             color = if (enabled) ComboColors.White else ComboColors.White20,
-            style = ComboTypography.Label16Medium,
+            style = ComboTypography.Label16Regular,
             modifier = Modifier.padding(horizontal = 24.dp),
         )
     }

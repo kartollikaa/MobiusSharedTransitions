@@ -33,8 +33,8 @@ object ComboColors {
 
 object ComboTypography {
     val Headline20 = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Normal)
-    val Label12 = TextStyle(fontSize = 12.sp)
-    val Label14 = TextStyle(fontSize = 14.sp)
+    val Label12 = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+    val Label14 = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal)
     val Label16Medium = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium)
-    val Label16Regular = TextStyle(fontSize = 16.sp)
+    val Label16Regular = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Normal)
 }

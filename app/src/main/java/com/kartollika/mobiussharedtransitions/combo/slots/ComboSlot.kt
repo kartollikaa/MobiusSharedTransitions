@@ -266,7 +266,6 @@ private fun SharedTransitionScope.ComboSlotContent(
                     StoppedBadge(
                         state = state,
                         modifier = Modifier
-                            .zIndex(3f)
                             .align(Alignment.Center),
                         canDrawArea = {
                             it.key != ComboBlurKey.DetailProductImage
@@ -396,7 +395,7 @@ private fun SharedTransitionScope.SlotInfo(
                 )
                 .graphicsLayer { alpha = if (product.stopped) 0.4f else 1f },
             text = product.name,
-            style = ComboTypography.Label16Medium,
+            style = ComboTypography.Label16Regular,
             maxLines = if (product.customize.isNotEmpty()) 1 else 2,
             color = ComboColors.White,
             textAlign = TextAlign.Center,

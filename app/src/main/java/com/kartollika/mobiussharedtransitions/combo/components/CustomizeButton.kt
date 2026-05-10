@@ -26,7 +26,7 @@ fun CustomizeButton(
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),
             text = "Customize",
-            style = ComboTypography.Label16Medium,
+            style = ComboTypography.Label16Regular,
             color = ComboColors.White,
         )
     }

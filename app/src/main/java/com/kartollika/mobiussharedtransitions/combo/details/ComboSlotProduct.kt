@@ -270,7 +270,6 @@ private fun SharedTransitionScope.SlotProductImage(
             StoppedBadge(
                 state = state,
                 modifier = Modifier
-                    .zIndex(3f)
                     .align(Alignment.Center),
                 canDrawArea = {
                     it.key != ComboBlurKey.SlotProductImage
