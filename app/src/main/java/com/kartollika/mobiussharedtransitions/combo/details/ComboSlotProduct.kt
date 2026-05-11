@@ -190,7 +190,7 @@ private fun SharedTransitionScope.SlotProductImage(
                     .align(Alignment.Center),
                 canDrawArea = {
                     it.zIndex < ComboBlurZIndex.Image ||
-                        it.key == ComboBlurKey.DetailProductImage
+                        it.key != ComboBlurKey.SlotProductImage
                 },
             )
         }
