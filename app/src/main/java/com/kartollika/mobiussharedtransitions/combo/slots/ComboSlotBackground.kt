@@ -1,9 +1,7 @@
 package com.kartollika.mobiussharedtransitions.combo.slots
 
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.animateDp
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +28,7 @@ import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
+import com.kartollika.mobiussharedtransitions.combo.sharedtransition.animateNavEnterExitDp
 
 val SlotRoundingInSlots = 24.dp
 val SlotRoundingInDetails = 36.dp
@@ -59,13 +58,7 @@ fun SharedTransitionScope.ComboSlotBackground(
         ComboSlotSurface.Details -> SlotRoundingInSlots
     }
 
-    val animatedProgress = LocalNavAnimatedContentScope.current
-        .transition.animateDp { value ->
-            when (value) {
-                EnterExitState.Visible -> visibleRadius
-                EnterExitState.PreEnter, EnterExitState.PostExit -> hiddenRadius
-            }
-        }
+    val animatedProgress = animateNavEnterExitDp(visible = visibleRadius, hidden = hiddenRadius)
 
     // Defer reading animatedProgress.value to draw time so the corner-radius
     // animation invalidates only draw — not composition of border/blur/OverlayClip.

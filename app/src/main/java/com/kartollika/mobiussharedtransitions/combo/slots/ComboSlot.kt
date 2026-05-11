@@ -1,10 +1,8 @@
 package com.kartollika.mobiussharedtransitions.combo.slots
 
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.scaleToBounds
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -50,6 +48,7 @@ import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbna
 import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
+import com.kartollika.mobiussharedtransitions.combo.sharedtransition.animateNavEnterExitFloat
 
 const val ComboSlotSizeRatio = 0.66f
 private const val MaxImageHeightFraction = 0.44f
@@ -149,15 +148,10 @@ private fun SharedTransitionScope.ComboSlotContent(
 ) {
     val measurePolicy = remember { ComboSlotMeasurePolicy() }
 
-    val animatedAlpha = LocalNavAnimatedContentScope.current
-        .transition.animateFloat { value ->
-            if (!state.stopped) return@animateFloat 1f
-            when (value) {
-                EnterExitState.PreEnter -> 1f
-                EnterExitState.Visible -> 0.4f
-                EnterExitState.PostExit -> 0.4f
-            }
-        }
+    val animatedAlpha = animateNavEnterExitFloat(
+        visible = if (state.stopped) 0.4f else 1f,
+        hidden = 1f,
+    )
 
     Layout(
         modifier = modifier,
@@ -200,7 +194,7 @@ private fun SharedTransitionScope.ComboSlotContent(
                         modifier = Modifier
                             .align(Alignment.Center),
                         canDrawArea = {
-                            it.zIndex < ComboBlurZIndex.Image ||
+                            it.zIndex <= ComboBlurZIndex.Image &&
                                     it.key != ComboBlurKey.DetailProductImage
                         },
                     )

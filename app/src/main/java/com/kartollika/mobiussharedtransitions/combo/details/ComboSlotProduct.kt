@@ -1,13 +1,11 @@
 package com.kartollika.mobiussharedtransitions.combo.details
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.scaleToBounds
 import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
@@ -55,6 +53,7 @@ import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbna
 import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
+import com.kartollika.mobiussharedtransitions.combo.sharedtransition.animateNavEnterExitFloat
 import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotBackground
 import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotSurface
 
@@ -131,15 +130,10 @@ private fun SharedTransitionScope.SlotProductImage(
     state: SlotProduct,
     modifier: Modifier = Modifier,
 ) {
-    val animatedAlpha = LocalNavAnimatedContentScope.current
-        .transition.animateFloat { value ->
-            if (!state.stopped) return@animateFloat 1f
-            when (value) {
-                EnterExitState.PreEnter -> 0.4f
-                EnterExitState.Visible -> 1f
-                EnterExitState.PostExit -> 1f
-            }
-        }
+    val animatedAlpha = animateNavEnterExitFloat(
+        visible = 1f,
+        hidden = if (state.stopped) 0.4f else 1f,
+    )
 
     Box(modifier = modifier) {
         // AnimatedContent allows swapping the image smoothly when the user picks a
@@ -189,7 +183,7 @@ private fun SharedTransitionScope.SlotProductImage(
                 modifier = Modifier
                     .align(Alignment.Center),
                 canDrawArea = {
-                    it.zIndex < ComboBlurZIndex.Image ||
+                    it.zIndex <= ComboBlurZIndex.Image &&
                         it.key != ComboBlurKey.SlotProductImage
                 },
             )
