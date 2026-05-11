@@ -31,8 +31,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +42,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
@@ -56,7 +55,7 @@ import com.kartollika.mobiussharedtransitions.combo.components.IngredientThumbna
 import com.kartollika.mobiussharedtransitions.combo.components.StoppedBadge
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
-import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotBackgroundShared
+import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotBackground
 import com.kartollika.mobiussharedtransitions.combo.slots.ComboSlotSurface
 
 private const val ChangeProductAnimationDurationMs = 100
@@ -77,8 +76,8 @@ fun SharedTransitionScope.ComboSlotProduct(
             .width(204.dp)
             .aspectRatio(ProductImageAspectRatio),
     ) {
-        ComboSlotBackgroundShared(
-            modifier = Modifier.fillMaxSize(),
+        ComboSlotBackground(
+            modifier = Modifier.fillMaxSize().zIndex(1f),
             state = state,
             surface = ComboSlotSurface.Details,
             backgroundColor = backgroundColor,
@@ -88,7 +87,7 @@ fun SharedTransitionScope.ComboSlotProduct(
             onClick = onClick,
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(1f)
+                .zIndex(2f)
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 20.dp, top = 12.dp),
         )
@@ -148,7 +147,17 @@ private fun SharedTransitionScope.SlotProductImage(
         AnimatedContent(
             modifier = Modifier
                 .matchParentSize()
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .sharedElement(
+                    sharedContentState = rememberSharedContentState(
+                        key = ComboSharedElementKey(
+                            slotId = state.slotId,
+                            productId = state.productId,
+                            type = ComboSharedElementType.Image
+                        ).toString()
+                    ),
+                    animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+                ),
             targetState = state.imageRes,
             transitionSpec = {
                 scaleIn(
@@ -163,19 +172,10 @@ private fun SharedTransitionScope.SlotProductImage(
                 painter = painterResource(targetImageRes),
                 contentDescription = null,
                 modifier = Modifier
-                    .sharedElement(
-                        sharedContentState = rememberSharedContentState(
-                            key = ComboSharedElementKey(
-                                slotId = state.slotId,
-                                productId = state.productId,
-                                type = ComboSharedElementType.Image
-                            ).toString()
-                        ),
-                        animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                    )
+                    .fillMaxSize()
                     .backgroundBlurSource(
                         blurState = LocalBlurProvider.current,
-                        zIndex = 2f,
+                        zIndex = ComboBlurZIndex.Image,
                         key = ComboBlurKey.DetailProductImage,
                     )
                     .graphicsLayer { alpha = animatedAlpha.value },
@@ -189,7 +189,8 @@ private fun SharedTransitionScope.SlotProductImage(
                 modifier = Modifier
                     .align(Alignment.Center),
                 canDrawArea = {
-                    it.key != ComboBlurKey.SlotProductImage
+                    it.zIndex < ComboBlurZIndex.Image ||
+                        it.key == ComboBlurKey.DetailProductImage
                 },
             )
         }

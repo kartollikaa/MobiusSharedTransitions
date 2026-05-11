@@ -30,7 +30,7 @@ import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.ComboSlot
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
@@ -116,14 +116,14 @@ private fun BackgroundTint(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .backgroundBlurSource(
                     blurState = LocalBlurProvider.current,
-                    zIndex = 1f,
-                    key = ComboBlurKey.DetailsTint,
+                    zIndex = ComboBlurZIndex.BackgroundTint,
                 )
                 .animateEnterExit()
                 .backgroundBlurEffect(
                     blurState = LocalBlurProvider.current,
                     blurTint = ComboColors.Black20,
                     blurRadius = 8.dp,
+                    canDrawArea = { it.zIndex < ComboBlurZIndex.BackgroundTint },
                 )
         )
     }

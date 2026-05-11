@@ -20,12 +20,14 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
-import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
+import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementKey
 import com.kartollika.mobiussharedtransitions.combo.sharedtransition.ComboSharedElementType
 
@@ -45,7 +47,7 @@ enum class ComboSlotSurface(val cornerRadius: Dp) {
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SharedTransitionScope.ComboSlotBackgroundShared(
+fun SharedTransitionScope.ComboSlotBackground(
     state: SlotProduct,
     surface: ComboSlotSurface,
     modifier: Modifier = Modifier,
@@ -90,6 +92,10 @@ fun SharedTransitionScope.ComboSlotBackgroundShared(
 
     ComboSlotBackground(
         modifier = modifier
+            .backgroundBlurSource(
+                blurState = LocalBlurProvider.current,
+                zIndex = ComboBlurZIndex.SlotBackground,
+            )
             .sharedElement(
                 sharedContentState = rememberSharedContentState(
                     key = ComboSharedElementKey(
@@ -120,15 +126,16 @@ private fun ComboSlotBackground(
 ) {
     Box(
         modifier = modifier
+            .backgroundBlurSource(
+                blurState = LocalBlurProvider.current,
+                zIndex = ComboBlurZIndex.SlotBackground,
+            )
             .backgroundBlurEffect(
                 blurState = LocalBlurProvider.current,
                 fallbackBackgroundColor = backgroundColor,
                 shape = clipShape,
                 blurRadius = 40.dp,
-                canDrawArea = { area ->
-                    area.key != ComboBlurKey.SlotProductImage &&
-                            area.key != ComboBlurKey.DetailProductImage
-                }
+                canDrawArea = { it.zIndex < ComboBlurZIndex.SlotBackground }
             )
             .border(
                 width = 0.5.dp,

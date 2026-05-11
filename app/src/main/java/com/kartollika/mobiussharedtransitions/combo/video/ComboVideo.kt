@@ -19,6 +19,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.kartollika.mobiussharedtransitions.R
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 
@@ -51,7 +52,7 @@ fun ComboVideo(
         modifier = modifier
             .fillMaxSize()
             .background(BackgroundSurfaceColor)
-            .backgroundBlurSource(blurProvider),
+            .backgroundBlurSource(blurProvider, zIndex = ComboBlurZIndex.Video),
         factory = { ctx ->
             val playerView = LayoutInflater.from(ctx)
                 .inflate(R.layout.combo_player_view, null) as PlayerView

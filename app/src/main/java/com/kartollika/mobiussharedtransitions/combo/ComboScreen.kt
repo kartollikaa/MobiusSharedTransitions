@@ -24,6 +24,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.scene.Scene
 import androidx.navigation3.ui.NavDisplay
 import com.kartollika.mobiussharedtransitions.combo.blur.BlurProvider
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.details.ComboDetails
@@ -107,7 +108,7 @@ fun ComboScreen(
                                 )
                             )
                         )
-                        .backgroundBlurSource(blurProvider)
+                        .backgroundBlurSource(blurProvider, zIndex = ComboBlurZIndex.Video)
                 )
             }
 

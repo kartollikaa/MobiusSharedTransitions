@@ -6,6 +6,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.scaleToBounds
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
@@ -38,11 +39,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
-import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.kartollika.mobiussharedtransitions.combo.SlotProduct
 import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.CustomizeButton
@@ -73,11 +75,12 @@ fun SharedTransitionScope.ComboSlot(
                 onClick = onClick,
             )
     ) {
-        ComboSlotBackgroundShared(
+        ComboSlotBackground(
             state = state,
             surface = ComboSlotSurface.Slots,
             backgroundColor = backgroundColor,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         )
 
         ComboSlotContent(
@@ -173,8 +176,7 @@ private fun SharedTransitionScope.ComboSlotContent(
                     contentDescription = null,
                     contentScale = ContentScale.FillHeight,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f)
+                        .fillMaxSize()
                         .align(Alignment.Center)
                         .sharedElement(
                             sharedContentState = rememberSharedContentState(
@@ -189,7 +191,7 @@ private fun SharedTransitionScope.ComboSlotContent(
                         .graphicsLayer { alpha = animatedAlpha.value }
                         .backgroundBlurSource(
                             blurState = LocalBlurProvider.current,
-                            zIndex = 2f,
+                            zIndex = ComboBlurZIndex.Image,
                             key = ComboBlurKey.SlotProductImage,
                         )
                 )
@@ -200,7 +202,8 @@ private fun SharedTransitionScope.ComboSlotContent(
                         modifier = Modifier
                             .align(Alignment.Center),
                         canDrawArea = {
-                            it.key != ComboBlurKey.DetailProductImage
+                            it.zIndex < ComboBlurZIndex.Image ||
+                                it.key == ComboBlurKey.SlotProductImage
                         },
                     )
                 }

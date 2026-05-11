@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
+import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurZIndex
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurEffect
 import dev.chrisbanes.haze.ExperimentalHazeApi
@@ -22,7 +23,7 @@ fun BlurredCircleIconButton(
     contentDescription: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    canDrawArea: ((HazeArea) -> Boolean)? = null,
+    canDrawArea: ((HazeArea) -> Boolean)? = { it.zIndex < ComboBlurZIndex.SlotBackground },
 ) {
     IconButton(
         onClick = onClick,

@@ -37,7 +37,6 @@ import com.kartollika.mobiussharedtransitions.combo.ComboSlot
 import com.kartollika.mobiussharedtransitions.combo.ComboState
 import com.kartollika.mobiussharedtransitions.combo.ComboTypography
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
-import com.kartollika.mobiussharedtransitions.combo.blur.ComboBlurKey
 import com.kartollika.mobiussharedtransitions.combo.blur.LocalBlurProvider
 import com.kartollika.mobiussharedtransitions.combo.blur.backgroundBlurSource
 import com.kartollika.mobiussharedtransitions.combo.components.BlurredCircleIconButton
@@ -93,7 +92,6 @@ fun ComboSlots(
                             icon = Icons.Default.Close,
                             contentDescription = "Close",
                             onClick = onCloseClick,
-                            canDrawArea = { area -> area.key != ComboBlurKey.DetailsTint },
                         )
                     },
                 )

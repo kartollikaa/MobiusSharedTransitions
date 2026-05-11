@@ -1,10 +1,9 @@
 package com.kartollika.mobiussharedtransitions.combo.blur
 
 /**
- * Type-safe keys for combo blur sources.
- *
- * Used to prevent drawing one blur on top of another, which would degrade the visual quality
- * (e.g. blurring an already-blurred image looks wrong).
+ * Keys for the two product-image blur sources. Used by [StoppedBadge] to keep blurring its
+ * own image while ignoring the other screen's image during a shared-element transition —
+ * z-index alone can't distinguish two sources at the same layer.
  */
 sealed class ComboBlurKey {
 
@@ -13,7 +12,4 @@ sealed class ComboBlurKey {
 
     /** Product image blur source in the detail view. */
     data object DetailProductImage : ComboBlurKey()
-
-    /** Full-screen tint overlay blur source shown behind the detail card. */
-    data object DetailsTint : ComboBlurKey()
 }

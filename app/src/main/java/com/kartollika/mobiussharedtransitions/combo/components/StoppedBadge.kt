@@ -39,7 +39,6 @@ fun SharedTransitionScope.StoppedBadge(
                     )
                 ),
                 animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-                zIndexInOverlay = 1f,
             )
             .backgroundBlurEffect(
                 blurState = LocalBlurProvider.current,
