@@ -46,7 +46,7 @@ fun SharedTransitionScope.StoppedBadge(
                 shape = RoundedCornerShape(10.dp),
                 blurTint = ComboColors.White10,
                 fallbackBackgroundColor = ComboColors.Black60,
-                blurRadius = 40.dp,
+                blurRadius = 32.dp,
                 canDrawArea = canDrawArea,
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),

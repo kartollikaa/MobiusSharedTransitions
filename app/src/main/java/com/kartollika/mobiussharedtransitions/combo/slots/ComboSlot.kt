@@ -186,12 +186,12 @@ private fun SharedTransitionScope.ComboSlotContent(
                             ),
                             animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                         )
+                        .graphicsLayer { alpha = animatedAlpha.value }
                         .backgroundBlurSource(
                             blurState = LocalBlurProvider.current,
                             zIndex = 2f,
                             key = ComboBlurKey.SlotProductImage,
                         )
-                        .graphicsLayer { alpha = animatedAlpha.value }
                 )
 
                 if (state.stopped) {
