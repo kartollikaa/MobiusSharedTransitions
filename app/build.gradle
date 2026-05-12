@@ -24,7 +24,21 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        benchmark {
+            initWith release
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            // R8 ON for realistic absolute numbers. Keep rules in
+            // proguard-rules.pro must cover Haze, Navigation3, Media3, the
+            // Compose runtime entry points, and the launcher activity, or
+            // installation fails with INSTALL_FAILED_INVALID_APK.
+            minifyEnabled true
+            profileable true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -58,6 +72,9 @@ dependencies {
     // Navigation3
     implementation libs.androidx.navigation3.runtime
     implementation libs.androidx.navigation3.ui
+
+    // ProfileInstaller — required for Macrobenchmark to attach Perfetto traces
+    implementation libs.androidx.profileinstaller
 
     // Material Icons (Close, ArrowBack used in combo UI)
     implementation libs.androidx.compose.material.icons.core

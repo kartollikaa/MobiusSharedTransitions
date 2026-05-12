@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Macrobenchmark's MacrobenchmarkRule chains GrantPermissionRule for
+         READ/WRITE external storage on the test process. Both must be
+         declared without a maxSdkVersion cap or `pm grant` fails on API 33+. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+</manifest>

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.kartollika.mobiussharedtransitions.combo.ComboColors
@@ -62,6 +63,7 @@ fun ComboDetails(
                         .height(64.dp),
                     startContent = {
                         BlurredCircleIconButton(
+                            modifier = Modifier.testTag("combo_back"),
                             icon = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
                             onClick = onBackClick,

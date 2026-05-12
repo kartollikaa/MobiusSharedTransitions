@@ -1,0 +1,54 @@
+plugins {
+    alias(libs.plugins.android.test)
+}
+
+android {
+    namespace 'com.kartollika.mobiussharedtransitions.benchmark'
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
+
+    defaultConfig {
+        minSdk 26
+        targetSdk 36
+        // Macrobenchmark uses the standard JUnit runner — AndroidBenchmarkRunner
+        // is the microbenchmark (in-process) one and isn't on the macro classpath.
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // EMULATOR: this project also gets run on an AVD during dev; suppress
+        // the emulator error so benchmarks complete (results from emulators
+        // are not representative — only treat the on-device numbers as real).
+        // Real-device runs ignore this since the error doesn't fire.
+        testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
+    }
+
+    // Required by Macrobenchmark: makes the test APK self-instrumenting (runs
+    // in a separate process from the target app). Without this, the runner
+    // reports NOT-SELF-INSTRUMENTING and refuses to measure.
+    experimentalProperties["android.experimental.self-instrumenting"] = true
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    // Point Macrobenchmark at :app so it can install + profile the target APK.
+    targetProjectPath = ":app"
+
+    buildTypes {
+        // Mirror :app's `benchmark` build type so variant resolution matches.
+        // The test APK itself doesn't need minification.
+        benchmark {
+            debuggable = true
+            signingConfig = signingConfigs.debug
+            matchingFallbacks = ['release']
+        }
+    }
+}
+
+dependencies {
+    implementation libs.androidx.junit
+    implementation libs.androidx.test.uiautomator
+    implementation libs.androidx.benchmark.macro
+}

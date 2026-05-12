@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -147,10 +148,11 @@ private fun SharedTransitionScope.SlotsList(
         contentPadding = PaddingValues(horizontal = horizontalPadding),
         state = lazyListState,
     ) {
-        itemsIndexed(state.comboSlots) { _, slot ->
+        itemsIndexed(state.comboSlots) { index, slot ->
             ComboSlot(
                 state = slot.selectedProduct,
                 modifier = Modifier
+                    .testTag("combo_slot_$index")
                     .sharedBounds(
                         rememberSharedContentState(key = "item-${slot.id}"),
                         animatedVisibilityScope = LocalNavAnimatedContentScope.current,

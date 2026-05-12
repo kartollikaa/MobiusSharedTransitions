@@ -16,8 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -71,21 +74,27 @@ private fun comboPredictiveBackTransitionSpec():
  *
  * @param initialState  The initial [ComboState] populated from [comboPreviewState].
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ComboScreen(
     initialState: ComboState = comboPreviewState,
+    blurEnabled: Boolean = true,
 ) {
     // Mutable state so that product-selection interactions update the UI.
     var state by remember { mutableStateOf(initialState) }
     val backStack = rememberNavBackStack(ComboSlotsKey)
 
-    // Haze blur infrastructure
-    val hazeState = rememberHazeState(blurEnabled = true)
+    // Haze blur infrastructure — `blurEnabled` is the A/B knob the benchmark
+    // toggles via Intent extra in MainActivity.
+    val hazeState = rememberHazeState(blurEnabled = blurEnabled)
     val blurProvider = remember(hazeState) { BlurProvider(hazeState) }
 
     CompositionLocalProvider(LocalBlurProvider provides blurProvider) {
-        Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .semantics { testTagsAsResourceId = true },
+        ) {
             // ----------------------------------------------------------------
             // Background — video or gradient fallback, acts as blur source.
             // PlayerView uses TextureView (via XML) so Haze can capture it.
