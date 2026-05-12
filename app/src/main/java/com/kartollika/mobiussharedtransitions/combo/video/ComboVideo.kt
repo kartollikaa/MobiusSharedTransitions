@@ -39,7 +39,7 @@ fun ComboVideo(
             setMediaItem(MediaItem.fromUri(videoUri))
             repeatMode = Player.REPEAT_MODE_ONE
             videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-            playWhenReady = false
+            playWhenReady = true
             prepare()
         }
     }
