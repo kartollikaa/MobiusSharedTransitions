@@ -20,8 +20,8 @@ object ComboColors {
     /** Card / panel background when blur is unavailable */
     val CardBackground = Color(0xFF2A3D50)
 
-    /** Warm amber for the primary "Add to cart" button */
-    val ButtonPrimary = Color(0xFFFF8C42)
+    /** Primary "Add to cart" button */
+    val ButtonPrimary = Color(0xFF334CDB)
 
     /** Semi-transparent white for secondary buttons */
     val ButtonSecondaryNormal = Color(0x1AFFFFFF)
